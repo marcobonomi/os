@@ -1,0 +1,2 @@
+# Graphical boot splash (LUKS PIN prompt) and quiet kernel output
+kargs = ["rhgb", "quiet"]
