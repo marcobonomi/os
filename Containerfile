@@ -21,6 +21,12 @@ RUN --mount=type=bind,source=build,target=/ctx \
     --mount=type=bind,from=akmods,source=/rpms,target=/tmp/akmods-rpms \
     /ctx/20-nvidia.sh
 
+RUN --mount=type=bind,source=build,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/30-desktop.sh
+
 # Static configuration files, copied as-is (paths mirror /).
 # After the packages, so that they can override packaged files.
 COPY files/ /
