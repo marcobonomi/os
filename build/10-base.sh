@@ -1,45 +1,38 @@
 #!/usr/bin/env bash
-# Step 2: desktop foundations and removal of server/cloud packages
+# Step 2: system foundations on top of the minimal root filesystem
 set -euo pipefail
 
+packages=(
+    # Disk encryption (LUKS), network
+    cryptsetup NetworkManager
+
+    # Firmware: network card (linux-firmware, realtek) and CPU microcode
+    linux-firmware realtek-firmware amd-ucode-firmware
+
+    # Users, passwords, sudo, authorization
+    sudo polkit passwd shadow-utils
+
+    # Accurate time (TLS, signature checks) and time zones
+    chrony tzdata
+
+    # Swap on zram
+    zram-generator-defaults
+
+    # Containers (AI workloads)
+    podman
+
+    # Audio
+    pipewire wireplumber pipewire-pulseaudio pipewire-alsa
+
+    # Graphical boot splash (LUKS PIN prompt)
+    plymouth plymouth-system-theme
+
+    # Basic command line tools
+    less tar zstd iproute hostname bash-completion usbutils pciutils
+)
+
 # Only explicitly requested packages and their hard dependencies
-dnf_install() { dnf -y install --setopt=install_weak_deps=False "$@"; }
-
-# --- Remove server/cloud packages ---------------------------------------------
-# - cloud: growpart, cloud-setup, Azure agent udev rules
-# - crash dumps: kdump (coredumps are disabled anyway)
-# - enterprise auth: Active Directory / FreeIPA
-# - foreign-architecture emulation, real-time stall daemon, legacy iptables
-# - clevis: TPM unlock is done with systemd-cryptenroll instead
-# - AWS libraries (cloud)
-# - firmware for hardware that is absent or disabled: nouveau/nova (the NVIDIA
-#   driver ships its own), AMD/Intel GPUs, Wi-Fi, Bluetooth, modems, laptop audio
-dnf -y remove \
-    cloud-utils-growpart \
-    NetworkManager-cloud-setup \
-    WALinuxAgent-udev \
-    kdump-utils kexec-tools \
-    sssd-ad sssd-ipa \
-    'qemu-user-static*' \
-    stalld \
-    iptables-services \
-    clevis clevis-dracut clevis-luks clevis-pin-tpm2 clevis-systemd \
-    python3-boto3 python3-botocore python3-s3transfer \
-    nvidia-gpu-firmware amd-gpu-firmware intel-gpu-firmware \
-    atheros-firmware mt7xxx-firmware brcmfmac-firmware tiwilink-firmware \
-    nxpwireless-firmware qcom-wwan-firmware \
-    intel-audio-firmware cirrus-audio-firmware intel-npu-firmware
-
-# Created by the fedora-bootc build (not by a package): it would make dracut
-# fail now that clevis is gone
-rm /usr/lib/dracut/dracut.conf.d/50-bootc-clevis.conf
-
-# --- Install desktop foundations ----------------------------------------------
-dnf_install \
-    pipewire wireplumber pipewire-pulseaudio pipewire-alsa \
-    zram-generator-defaults \
-    plymouth plymouth-system-theme \
-    usbutils pciutils
+dnf -y install --setopt=install_weak_deps=False "${packages[@]}"
 
 # --- Cleanup: no build leftovers in /var and /run (bootc lint) ----------------
 # /var/lib/dnf also holds the "countme" counters: not wanted in the image

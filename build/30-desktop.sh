@@ -50,5 +50,5 @@ systemctl enable plasmalogin.service
 # - /run/*: left by package scriptlets
 # - authselect checksum: regenerated at boot by authselect-apply-changes.service
 dnf clean all
-rm -rf /var/lib/dnf /run/dnf /run/plasmalogin /run/selinux-policy
+rm -rf /var/lib/dnf /run/dnf /run/plasmalogin /run/samba /run/selinux-policy
 rm /var/lib/authselect/checksum
