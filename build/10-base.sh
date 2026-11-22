@@ -11,6 +11,9 @@ dnf_install() { dnf -y install --setopt=install_weak_deps=False "$@"; }
 # - enterprise auth: Active Directory / FreeIPA
 # - foreign-architecture emulation, real-time stall daemon, legacy iptables
 # - clevis: TPM unlock is done with systemd-cryptenroll instead
+# - AWS libraries (cloud)
+# - firmware for hardware that is absent or disabled: nouveau/nova (the NVIDIA
+#   driver ships its own), AMD/Intel GPUs, Wi-Fi, Bluetooth, modems, laptop audio
 dnf -y remove \
     cloud-utils-growpart \
     NetworkManager-cloud-setup \
@@ -20,7 +23,12 @@ dnf -y remove \
     'qemu-user-static*' \
     stalld \
     iptables-services \
-    clevis clevis-dracut clevis-luks clevis-pin-tpm2 clevis-systemd
+    clevis clevis-dracut clevis-luks clevis-pin-tpm2 clevis-systemd \
+    python3-boto3 python3-botocore python3-s3transfer \
+    nvidia-gpu-firmware amd-gpu-firmware intel-gpu-firmware \
+    atheros-firmware mt7xxx-firmware brcmfmac-firmware tiwilink-firmware \
+    nxpwireless-firmware qcom-wwan-firmware \
+    intel-audio-firmware cirrus-audio-firmware intel-npu-firmware
 
 # Created by the fedora-bootc build (not by a package): it would make dracut
 # fail now that clevis is gone
