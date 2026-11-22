@@ -1,0 +1,3 @@
+# Keep the in-kernel NVIDIA drivers out of the initramfs (the system ones are
+# blacklisted by /usr/lib/modprobe.d/nvidia.conf from nvidia-kmod-common)
+kargs = ["rd.driver.blacklist=nouveau", "rd.driver.blacklist=nova-core"]
