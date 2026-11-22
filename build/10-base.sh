@@ -22,6 +22,10 @@ dnf -y remove \
     iptables-services \
     clevis clevis-dracut clevis-luks clevis-pin-tpm2 clevis-systemd
 
+# Created by the fedora-bootc build (not by a package): it would make dracut
+# fail now that clevis is gone
+rm /usr/lib/dracut/dracut.conf.d/50-bootc-clevis.conf
+
 # --- Install desktop foundations ----------------------------------------------
 dnf_install \
     pipewire wireplumber pipewire-pulseaudio pipewire-alsa \
